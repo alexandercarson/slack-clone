@@ -1,11 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import CreateIcon from "@material-ui/icons/Create";
 import InsertComment from "@material-ui/icons/InsertCommentSharp";
+import AddIcon from "@material-ui/icons/AddSharp";
+
 import SideBarOption from "../components/SideBarOption";
+import db from "../firebase";
 import "../css/Sidebar.css";
 
 const Sidebar = () => {
+  const [channels, setChannels] = useState([]);
+
+  useEffect(() => {
+    db.collection("rooms").onSnapshot((snapshot) =>
+      setChannels(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          name: doc.data().name,
+        }))
+      )
+    );
+  }, []);
+
   return (
     <div className="sidebar">
       <div className="sidebar__header">
@@ -22,14 +38,14 @@ const Sidebar = () => {
       <SideBarOption Icon={InsertComment} title="Threads" />
       <SideBarOption title="YouTube" />
       <hr />
-      {/* More Stuff */}
-      <SideBarOption Icon={InsertComment} title="Somethign Else" />
-      <SideBarOption title="Some Other Channel" />
+      <h2>Channels</h2>
       <hr />
       {/* Even More Stuff */}
-      <SideBarOption title="Channels" />
-      {/* connect to db and list all channels */}
-      {/* sb options.... */}
+      <SideBarOption Icon={AddIcon} title="Add Channel" />
+      {/* SideBar Options > CHANNELS.... */}
+      {channels.map((channel) => (
+        <SideBarOption title={channel.name} id={channel.id} />
+      ))}
     </div>
   );
 };
